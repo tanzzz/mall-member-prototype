@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我的订单</title>
+    <style>
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideInRight { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif; background:#1a1a2e; display:flex; justify-content:center; align-items:center; min-height:100vh; }
+        /* iPhone 17 Pro 外壳 */
+        .iphone-device { width:403px; height:874px; background:linear-gradient(145deg,#2a2a2a,#1a1a1a,#0d0d0d); border-radius:52px; padding:14px; position:relative; box-shadow:0 0 0 1px rgba(255,255,255,.08),0 20px 60px rgba(0,0,0,.5),0 0 120px rgba(0,0,0,.3),inset 0 0 1px rgba(255,255,255,.1); }
+        .iphone-device::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:130px; height:34px; background:#0d0d0d; border-radius:0 0 20px 20px; z-index:100; }
+        .iphone-device::after { content:''; position:absolute; top:8px; left:50%; transform:translateX(-50%); width:100px; height:28px; background:#000; border-radius:0 0 16px 16px; z-index:101; }
+        .dynamic-island-cam { position:absolute; top:18px; right:calc(50% - 42px); width:10px; height:10px; background:radial-gradient(circle at 35% 35%,#1a1a2e,#000); border-radius:50%; z-index:102; border:1px solid rgba(255,255,255,.05); }
+        .btn-side-left-1 { position:absolute; left:-2px; top:140px; width:3px; height:28px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-left-2 { position:absolute; left:-2px; top:195px; width:3px; height:48px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-left-3 { position:absolute; left:-2px; top:253px; width:3px; height:48px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-right { position:absolute; right:-2px; top:200px; width:3px; height:60px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:0 2px 2px 0; }
+        .iphone-screen { width:375px; height:812px; border-radius:40px; overflow:hidden; position:relative; background:#F5F5F5; }
+        .home-indicator { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); width:134px; height:5px; background:rgba(0,0,0,.2); border-radius:3px; z-index:200; }
+        .phone-frame { width:375px; height:812px; background:#F5F5F5; position:relative; overflow:hidden; display:flex; flex-direction:column; }
+        .status-bar { height:44px; background:#E2231A; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; color:#fff; }
+        .status-bar .time { font-weight:600; }
+        .status-bar .icons { display:flex; gap:4px; font-size:11px; }
+        .nav-bar { height:44px; background:#E2231A; display:flex; align-items:center; justify-content:center; position:relative; }
+        .nav-bar .back { position:absolute; left:16px; font-size:20px; color:#fff; cursor:pointer; }
+        .nav-bar .title { font-size:17px; font-weight:600; color:#fff; }
+        .tab-bar { display:flex; background:#fff; border-bottom:.5px solid #F0F0F0; }
+        .tab-bar .tab { flex:1; text-align:center; padding:12px 0; font-size:13px; color:#666; cursor:pointer; position:relative; transition:color .2s; }
+        .tab-bar .tab.active { color:#E2231A; font-weight:600; }
+        .tab-bar .tab.active::after { content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:20px; height:2px; background:#E2231A; border-radius:1px; }
+        .scroll-content { flex:1; overflow-y:auto; padding:12px; }
+        .scroll-content::-webkit-scrollbar { display:none; }
+        .order-card { background:#fff; border-radius:10px; margin-bottom:12px; overflow:hidden; animation:fadeInUp .5s ease; }
+        .order-card:nth-child(2) { animation-delay:.1s; }
+        .order-card:nth-child(3) { animation-delay:.2s; }
+        .order-card:nth-child(4) { animation-delay:.3s; }
+        .order-header { display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-bottom:.5px solid #F5F5F5; }
+        .order-header .order-no { font-size:12px; color:#999; }
+        .order-header .status { font-size:12px; font-weight:600; }
+        .order-header .status.pending { color:#E2231A; }
+        .order-header .status.completed { color:#43A047; }
+        .order-header .status.cancelled { color:#999; }
+        .order-body { padding:12px 14px; display:flex; gap:10px; }
+        .order-body .thumb { width:72px; height:72px; background:#F5F5F5; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
+        .order-body .info { flex:1; min-width:0; }
+        .order-body .info .name { font-size:14px; font-weight:500; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .order-body .info .spec { font-size:11px; color:#999; margin-top:4px; }
+        .order-body .info .price-row { display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+        .order-body .info .price { font-size:15px; font-weight:600; color:#E2231A; }
+        .order-body .info .qty { font-size:11px; color:#999; }
+        .order-footer { display:flex; justify-content:flex-end; gap:8px; padding:10px 14px; border-top:.5px solid #F5F5F5; }
+        .order-footer .btn { padding:6px 14px; border-radius:14px; font-size:12px; cursor:pointer; border:1px solid #ddd; background:#fff; color:#666; }
+        .order-footer .btn.primary { background:linear-gradient(135deg,#E2231A,#FF4D3A); border:none; color:#fff; }
+        .empty-state { text-align:center; padding:80px 0; animation:fadeInUp .5s ease; }
+        .empty-state .icon { font-size:48px; margin-bottom:12px; }
+        .empty-state .text { font-size:14px; color:#999; }
+        .empty-state .sub { font-size:12px; color:#ccc; margin-top:4px; }
+    </style>
+</head>
+<body>
+    <div class="iphone-device">
+        <div class="dynamic-island-cam"></div>
+        <div class="btn-side-left-1"></div>
+        <div class="btn-side-left-2"></div>
+        <div class="btn-side-left-3"></div>
+        <div class="btn-side-right"></div>
+        <div class="iphone-screen">
+    <div class="phone-frame">
+        <div class="status-bar">
+            <span class="time">09:41</span>
+            <span class="icons">5G 100% ▮</span>
+        </div>
+        <div class="nav-bar">
+            <span class="back" onclick="history.back()">‹</span>
+            <span class="title">我的订单</span>
+        </div>
+        <div class="tab-bar" id="tabBar">
+            <div class="tab active" onclick="switchTab(this,'all')">全部</div>
+            <div class="tab" onclick="switchTab(this,'pending')">待付款</div>
+            <div class="tab" onclick="switchTab(this,'paid')">待使用</div>
+            <div class="tab" onclick="switchTab(this,'completed')">已完成</div>
+            <div class="tab" onclick="switchTab(this,'cancelled')">已取消</div>
+        </div>
+        <div class="scroll-content" id="orderList">
+            <div class="order-card">
+                <div class="order-header"><span class="order-no">订单号:20260806183001</span><span class="status pending">待付款</span></div>
+                <div class="order-body">
+                    <div class="thumb">🛍️</div>
+                    <div class="info">
+                        <div class="name">星巴克拿铁咖啡券 ×2</div>
+                        <div class="spec">规格：大杯 / 热饮</div>
+                        <div class="price-row"><span class="price">¥59.80</span><span class="qty">×2</span></div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <span class="btn" onclick="alert('取消订单')">取消订单</span>
+                    <span class="btn primary" onclick="alert('立即付款')">立即付款</span>
+                </div>
+            </div>
+            <div class="order-card">
+                <div class="order-header"><span class="order-no">订单号:20260805142003</span><span class="status pending">待使用</span></div>
+                <div class="order-body">
+                    <div class="thumb">🎬</div>
+                    <div class="info">
+                        <div class="name">万达影城双人观影券</div>
+                        <div class="spec">规格：双人座 / 任意场次</div>
+                        <div class="price-row"><span class="price">¥89.00</span><span class="qty">×1</span></div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <span class="btn" onclick="alert('申请退款')">申请退款</span>
+                    <span class="btn primary" onclick="alert('查看券码')">查看券码</span>
+                </div>
+            </div>
+            <div class="order-card">
+                <div class="order-header"><span class="order-no">订单号:20260803091502</span><span class="status completed">已完成</span></div>
+                <div class="order-body">
+                    <div class="thumb">🍲</div>
+                    <div class="info">
+                        <div class="name">海底捞100元代金券</div>
+                        <div class="spec">规格：满200可用</div>
+                        <div class="price-row"><span class="price">¥85.00</span><span class="qty">×1</span></div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <span class="btn" onclick="alert('再次购买')">再次购买</span>
+                    <span class="btn primary" onclick="alert('去评价')">去评价</span>
+                </div>
+            </div>
+            <div class="order-card">
+                <div class="order-header"><span class="order-no">订单号:20260728203005</span><span class="status cancelled">已取消</span></div>
+                <div class="order-body">
+                    <div class="thumb">👗</div>
+                    <div class="info">
+                        <div class="name">ZARA 9折优惠券</div>
+                        <div class="spec">规格：全场通用</div>
+                        <div class="price-row"><span class="price">¥0.00</span><span class="qty">×1</span></div>
+                    </div>
+                </div>
+                <div class="order-footer">
+                    <span class="btn" onclick="alert('删除订单')">删除订单</span>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+        <div class="home-indicator"></div>
+        </div>
+    <script>
+        function switchTab(el, type) {
+            document.querySelectorAll('.tab-bar .tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            console.log('[订单列表] 切换Tab:', type);
+            // 模拟Tab切换效果
+            const cards = document.querySelectorAll('.order-card');
+            cards.forEach(c => { c.style.animation = 'none'; c.offsetHeight; c.style.animation = 'fadeInUp .5s ease'; });
+        }
+        console.log('[订单列表] 页面加载完成');
+    </script>
+</body>
+</html>

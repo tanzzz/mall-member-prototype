@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>商场会员小程序 - 原型导航</title>
+    <style>
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif; background:#f0f2f5; min-height:100vh; padding:20px; }
+        .header { text-align:center; padding:30px 0 20px; animation:fadeInUp .5s ease; }
+        .header h1 { font-size:28px; color:#1a1a1a; margin-bottom:8px; }
+        .header p { color:#666; font-size:14px; }
+        .header .meta { margin-top:12px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+        .header .meta span { font-size:11px; color:#999; background:#fff; padding:4px 12px; border-radius:12px; border:1px solid #e8e8e8; }
+        .section-title { font-size:16px; color:#1a1a1a; margin:24px 0 12px; padding-left:12px; border-left:4px solid #E2231A; max-width:1200px; margin-left:auto; margin-right:auto; }
+        .page-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; max-width:1200px; margin:0 auto 20px; }
+        .page-card { background:#fff; border-radius:12px; padding:18px; cursor:pointer; transition:all .3s; border:1px solid #e8e8e8; text-decoration:none; display:block; animation:fadeInUp .5s ease; }
+        .page-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(226,35,26,.15); border-color:#E2231A; }
+        .page-card .icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; margin-bottom:10px; }
+        .page-card h3 { font-size:15px; color:#1a1a1a; margin-bottom:4px; }
+        .page-card p { font-size:12px; color:#888; line-height:1.5; }
+        .page-card .tag { display:inline-block; font-size:10px; padding:1px 6px; border-radius:4px; margin-top:6px; }
+        .tag-core { background:#FFEBEE; color:#E2231A; }
+        .tag-sub { background:#E3F2FD; color:#1E88E5; }
+        .icon-login { background:linear-gradient(135deg,#E2231A,#FF4D3A); }
+        .icon-home { background:linear-gradient(135deg,#FF6B6B,#E2231A); }
+        .icon-member { background:linear-gradient(135deg,#E2231A,#c0392b); }
+        .icon-points { background:linear-gradient(135deg,#FF8A65,#E2231A); }
+        .icon-coupon { background:linear-gradient(135deg,#FF8F00,#FFB300); }
+        .icon-sub { background:linear-gradient(135deg,#42A5F5,#1E88E5); }
+        .flow-section { max-width:1200px; margin:20px auto; background:#fff; border-radius:12px; padding:20px; border:1px solid #e8e8e8; }
+        .flow-section h3 { font-size:15px; color:#1a1a1a; margin-bottom:12px; }
+        .flow-diagram { font-size:12px; color:#666; line-height:2.2; }
+        .flow-diagram .arrow { color:#E2231A; font-weight:bold; }
+        .flow-diagram .page-link { color:#1E88E5; text-decoration:underline; cursor:pointer; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>商场会员小程序原型</h1>
+        <p>京东UI规范 · 京东红#E2231A · CSS动画 · iPhone 17 Pro机型外壳 · 可交互原型</p>
+        <div class="meta">
+            <span>375 × 812</span>
+            <span>主色 #E2231A</span>
+            <span>iPhone 17 Pro 外壳</span>
+            <span>5 核心页 + 8 子页面</span>
+            <span>13 页面总计</span>
+        </div>
+    </div>
+
+    <div class="section-title">核心页面（含底部TabBar）</div>
+    <div class="page-grid">
+        <a class="page-card" href="pages/login.html">
+            <div class="icon icon-login">🔐</div>
+            <h3>登录 / 注册</h3>
+            <p>手机号+验证码登录、微信快捷登录、协议勾选、60s倒计时</p>
+            <span class="tag tag-core">核心页面</span>
+        </a>
+        <a class="page-card" href="pages/home.html">
+            <div class="icon icon-home">🏠</div>
+            <h3>首页</h3>
+            <p>搜索栏+城市选择、Banner轮播(3帧JS)、4×2功能宫格、VIP黑金会员卡、限时秒杀倒计时、热门活动、推荐品牌</p>
+            <span class="tag tag-core">核心页面</span>
+        </a>
+        <a class="page-card" href="pages/member-center.html">
+            <div class="icon icon-member">👑</div>
+            <h3>会员中心</h3>
+            <p>红色渐变头部+径向光晕、等级徽章+成长进度条、积分/券/消费数据、8项功能列表</p>
+            <span class="tag tag-core">核心页面</span>
+        </a>
+        <a class="page-card" href="pages/points-mall.html">
+            <div class="icon icon-points">🪙</div>
+            <h3>积分商城</h3>
+            <p>积分余额卡片(cardShine)、5分类Tab、2列6商品网格、积分规则</p>
+            <span class="tag tag-core">核心页面</span>
+        </a>
+        <a class="page-card" href="pages/coupon-center.html">
+            <div class="icon icon-coupon">🎫</div>
+            <h3>优惠券中心</h3>
+            <p>领券中心+我的券包双Tab、满减/折扣/餐饮三类券、锯齿缺口效果、领取状态切换</p>
+            <span class="tag tag-core">核心页面</span>
+        </a>
+    </div>
+
+    <div class="section-title">二三级子页面</div>
+    <div class="page-grid">
+        <a class="page-card" href="pages/member-code.html">
+            <div class="icon icon-sub">📱</div>
+            <h3>会员码</h3>
+            <p>二维码+条形码展示、头像+黄金会员徽章、pulse脉冲动画、刷新/保存</p>
+            <span class="tag tag-sub">二级页面</span>
+        </a>
+        <a class="page-card" href="pages/parking.html">
+            <div class="icon icon-sub">🅿️</div>
+            <h3>停车缴费</h3>
+            <p>车牌信息卡片、费用明细(countPulse)、会员8折优惠、缴费记录</p>
+            <span class="tag tag-sub">二级页面</span>
+        </a>
+        <a class="page-card" href="pages/order-list.html">
+            <div class="icon icon-sub">📋</div>
+            <h3>我的订单</h3>
+            <p>5状态Tab(全部/待付款/待使用/已完成/已取消)、订单卡片、操作按钮</p>
+            <span class="tag tag-sub">二级页面</span>
+        </a>
+        <a class="page-card" href="pages/points-detail.html">
+            <div class="icon icon-sub">📊</div>
+            <h3>积分明细</h3>
+            <p>积分余额头部、4分类筛选(全部/获取/消耗/过期)、按月分组明细</p>
+            <span class="tag tag-sub">二级页面</span>
+        </a>
+        <a class="page-card" href="pages/member-privilege.html">
+            <div class="icon icon-sub">💎</div>
+            <h3>会员特权</h3>
+            <p>深色等级Banner(cardShine)、6项特权卡片、4等级权益对比表</p>
+            <span class="tag tag-sub">二级页面</span>
+        </a>
+        <a class="page-card" href="pages/store-guide.html">
+            <div class="icon icon-sub">🗺️</div>
+            <h3>门店导览</h3>
+            <p>6层楼Tab切换、店铺列表+导航按钮、楼层平面图、8项便民服务</p>
+            <span class="tag tag-sub">二级页面</span>
+        </a>
+        <a class="page-card" href="pages/activity-detail.html">
+            <div class="icon icon-sub">🔥</div>
+            <h3>活动详情</h3>
+            <p>渐变Hero Banner、倒计时(countPulse)、礼品领取状态、活动规则、收藏+参与</p>
+            <span class="tag tag-sub">三级页面</span>
+        </a>
+    </div>
+
+    <div class="flow-section">
+        <h3>页面跳转流程</h3>
+        <div class="flow-diagram">
+            <span class="page-link" onclick="location.href='pages/login.html'">登录页</span>
+            <span class="arrow"> → </span>
+            <span class="page-link" onclick="location.href='pages/home.html'">首页</span>
+            <span class="arrow"> → </span>功能宫格/TabBar跳转各页面<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">├→</span> <span class="page-link" onclick="location.href='pages/member-center.html'">会员中心</span>
+            <span class="arrow"> → </span><span class="page-link" onclick="location.href='pages/member-code.html'">会员码</span> /
+            <span class="page-link" onclick="location.href='pages/member-privilege.html'">会员特权</span> /
+            <span class="page-link" onclick="location.href='pages/points-detail.html'">积分明细</span> /
+            <span class="page-link" onclick="location.href='pages/order-list.html'">我的订单</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">├→</span> <span class="page-link" onclick="location.href='pages/points-mall.html'">积分商城</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">├→</span> <span class="page-link" onclick="location.href='pages/coupon-center.html'">优惠券中心</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">├→</span> <span class="page-link" onclick="location.href='pages/parking.html'">停车缴费</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">├→</span> <span class="page-link" onclick="location.href='pages/store-guide.html'">门店导览</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="arrow">└→</span> <span class="page-link" onclick="location.href='pages/activity-detail.html'">活动详情</span>
+        </div>
+    </div>
+
+    <script>
+        console.log('[原型导航] 页面加载完成');
+        console.log('[原型导航] 共13个页面: 5核心页 + 8子页面');
+        console.log('[原型导航] 设计规范: 京东红#E2231A, 375×812, CSS动画, iPhone 17 Pro外壳');
+    </script>
+</body>
+</html>

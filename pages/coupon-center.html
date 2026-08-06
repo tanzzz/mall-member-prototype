@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>优惠券中心</title>
+    <style>
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        @keyframes bounceIn { 0%{transform:scale(.3);opacity:0} 50%{transform:scale(1.05)} 70%{transform:scale(.9)} 100%{transform:scale(1);opacity:1} }
+        @keyframes slideInRight { from{transform:translateX(20px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif; background:#1a1a2e; display:flex; justify-content:center; align-items:center; min-height:100vh; }
+        /* iPhone 17 Pro 外壳 */
+        .iphone-device { width:403px; height:874px; background:linear-gradient(145deg,#2a2a2a,#1a1a1a,#0d0d0d); border-radius:52px; padding:14px; position:relative; box-shadow:0 0 0 1px rgba(255,255,255,.08),0 20px 60px rgba(0,0,0,.5),0 0 120px rgba(0,0,0,.3),inset 0 0 1px rgba(255,255,255,.1); }
+        .iphone-device::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:130px; height:34px; background:#0d0d0d; border-radius:0 0 20px 20px; z-index:100; }
+        .iphone-device::after { content:''; position:absolute; top:8px; left:50%; transform:translateX(-50%); width:100px; height:28px; background:#000; border-radius:0 0 16px 16px; z-index:101; }
+        .dynamic-island-cam { position:absolute; top:18px; right:calc(50% - 42px); width:10px; height:10px; background:radial-gradient(circle at 35% 35%,#1a1a2e,#000); border-radius:50%; z-index:102; border:1px solid rgba(255,255,255,.05); }
+        .btn-side-left-1 { position:absolute; left:-2px; top:140px; width:3px; height:28px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-left-2 { position:absolute; left:-2px; top:195px; width:3px; height:48px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-left-3 { position:absolute; left:-2px; top:253px; width:3px; height:48px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-right { position:absolute; right:-2px; top:200px; width:3px; height:60px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:0 2px 2px 0; }
+        .iphone-screen { width:375px; height:812px; border-radius:40px; overflow:hidden; position:relative; background:#F5F5F5; }
+        .home-indicator { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); width:134px; height:5px; background:rgba(0,0,0,.2); border-radius:3px; z-index:200; }
+        .phone-frame { width:375px; height:812px; background:#F5F5F5; position:relative; overflow:hidden; display:flex; flex-direction:column; }
+
+        .status-bar { height:44px; background:#E2231A; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; color:#fff; }
+        .status-bar .time { font-weight:600; }
+        .status-bar .icons { display:flex; gap:4px; font-size:11px; }
+        .nav-bar { height:44px; background:#E2231A; display:flex; align-items:center; justify-content:space-between; padding:0 16px; }
+        .nav-bar .back { font-size:20px; color:#fff; cursor:pointer; }
+        .nav-bar .title { font-size:17px; font-weight:600; color:#fff; }
+        .nav-bar .history { font-size:13px; color:rgba(255,255,255,.8); cursor:pointer; }
+
+        /* 主Tab */
+        .main-tabs { display:flex; background:#fff; border-bottom:.5px solid #F0F0F0; }
+        .main-tab { flex:1; text-align:center; padding:12px 0; font-size:14px; color:#666; cursor:pointer; position:relative; transition:color .2s; }
+        .main-tab.active { color:#E2231A; font-weight:600; }
+        .main-tab.active::after { content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:24px; height:2px; background:#E2231A; border-radius:1px; }
+
+        .scroll-content { flex:1; overflow-y:auto; }
+        .scroll-content::-webkit-scrollbar { display:none; }
+
+        /* 领券中心 */
+        .coupon-list { padding:10px 12px; }
+        .coupon-card { display:flex; background:#fff; border-radius:10px; overflow:hidden; margin-bottom:10px; position:relative; animation:fadeInUp .5s ease; transition:transform .2s; }
+        .coupon-card:active { transform:scale(.98); }
+        .coupon-card .left { width:100px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:12px 0; position:relative; flex-shrink:0; }
+        .coupon-card .left .amount { font-size:28px; font-weight:700; line-height:1; }
+        .coupon-card .left .amount .yen { font-size:14px; }
+        .coupon-card .left .condition { font-size:10px; margin-top:4px; opacity:.8; }
+        .coupon-card.type-reduce .left { background:linear-gradient(135deg,#E2231A,#FF4D3A); color:#fff; }
+        .coupon-card.type-discount .left { background:linear-gradient(135deg,#FF9800,#FFB300); color:#fff; }
+        .coupon-card.type-food .left { background:linear-gradient(135deg,#8E24AA,#AB47BC); color:#fff; }
+        .coupon-card .left::after { content:''; position:absolute; right:-6px; top:50%; transform:translateY(-50%); width:12px; height:12px; background:#F5F5F5; border-radius:50%; border-left:1px solid #eee; }
+        .coupon-card .left::before { content:''; position:absolute; right:-6px; top:0; width:12px; height:50%; background:#fff; border-radius:0 0 12px 0; box-shadow:inset 0 -1px 0 #eee; }
+        .coupon-card .right { flex:1; padding:12px 14px; display:flex; flex-direction:column; justify-content:space-between; }
+        .coupon-card .right .name { font-size:14px; font-weight:600; color:#333; }
+        .coupon-card .right .desc { font-size:11px; color:#999; margin-top:2px; }
+        .coupon-card .right .bottom { display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
+        .coupon-card .right .date { font-size:10px; color:#C0C0C0; }
+        .coupon-card .right .claim-btn { padding:4px 14px; background:#E2231A; color:#fff; font-size:12px; border-radius:14px; border:none; cursor:pointer; transition:transform .2s; }
+        .coupon-card .right .claim-btn:active { transform:scale(.9); }
+        .coupon-card .right .claim-btn.claimed { background:#F0F0F0; color:#999; pointer-events:none; }
+
+        /* 我的券包 */
+        .status-tabs { display:flex; padding:10px 12px 0; gap:0; background:#fff; margin-bottom:10px; }
+        .status-tab { flex:1; text-align:center; padding:8px 0; font-size:13px; color:#666; cursor:pointer; position:relative; }
+        .status-tab.active { color:#E2231A; font-weight:600; }
+        .status-tab.active::after { content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:20px; height:2px; background:#E2231A; border-radius:1px; }
+        .status-tab .count { font-size:10px; color:#999; margin-left:2px; }
+
+        .my-coupon-list { padding:0 12px 12px; }
+        .my-coupon { display:flex; background:#fff; border-radius:10px; overflow:hidden; margin-bottom:10px; animation:fadeInUp .5s ease; }
+        .my-coupon .left { width:90px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 0; flex-shrink:0; }
+        .my-coupon .left .amount { font-size:26px; font-weight:700; line-height:1; }
+        .my-coupon .left .amount .yen { font-size:12px; }
+        .my-coupon .left .condition { font-size:10px; margin-top:3px; opacity:.8; }
+        .my-coupon.status-unused .left { background:linear-gradient(135deg,#E2231A,#FF4D3A); color:#fff; }
+        .my-coupon.status-used .left { background:#E0E0E0; color:#999; }
+        .my-coupon.status-expired .left { background:#E0E0E0; color:#999; }
+        .my-coupon .right { flex:1; padding:10px 12px; display:flex; flex-direction:column; justify-content:space-between; }
+        .my-coupon .right .name { font-size:13px; font-weight:600; color:#333; }
+        .my-coupon.status-used .right .name,
+        .my-coupon.status-expired .right .name { color:#999; }
+        .my-coupon .right .desc { font-size:10px; color:#999; margin-top:2px; }
+        .my-coupon .right .date { font-size:10px; color:#C0C0C0; margin-top:6px; }
+        .my-coupon .right .use-btn { padding:3px 12px; background:#E2231A; color:#fff; font-size:11px; border-radius:12px; border:none; cursor:pointer; align-self:flex-end; }
+
+        .empty-state { text-align:center; padding:60px 0; color:#C0C0C0; }
+        .empty-state .icon { font-size:48px; margin-bottom:10px; }
+        .empty-state .text { font-size:14px; }
+
+        /* 底部TabBar */
+        .tab-bar { height:50px; background:#fff; border-top:.5px solid #eee; display:flex; align-items:center; justify-content:space-around; }
+        .tab-item { display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; flex:1; }
+        .tab-item svg { width:22px; height:22px; }
+        .tab-item span { font-size:10px; }
+        .tab-item.active svg { fill:#E2231A; }
+        .tab-item.active span { color:#E2231A; font-weight:600; }
+        .tab-item:not(.active) svg { fill:#999; }
+        .tab-item:not(.active) span { color:#999; }
+    </style>
+</head>
+<body>
+    <div class="iphone-device">
+        <div class="dynamic-island-cam"></div>
+        <div class="btn-side-left-1"></div>
+        <div class="btn-side-left-2"></div>
+        <div class="btn-side-left-3"></div>
+        <div class="btn-side-right"></div>
+        <div class="iphone-screen">
+    <div class="phone-frame">
+        <div class="status-bar">
+            <span class="time">09:41</span>
+            <span class="icons">5G 100% ▮</span>
+        </div>
+        <div class="nav-bar">
+            <span class="back" onclick="history.back()">‹</span>
+            <span class="title">优惠券</span>
+            <span class="history" onclick="alert('历史券')">历史券</span>
+        </div>
+        <div class="main-tabs">
+            <div class="main-tab active" onclick="switchMainTab(0)">领券中心</div>
+            <div class="main-tab" onclick="switchMainTab(1)">我的券包</div>
+        </div>
+        <div class="scroll-content">
+            <!-- 领券中心 -->
+            <div id="panelClaim" class="coupon-list">
+                <div class="coupon-card type-reduce">
+                    <div class="left"><div class="amount"><span class="yen">¥</span>50</div><div class="condition">满300可用</div></div>
+                    <div class="right"><div class="name">全场满减券</div><div class="desc">全场商品通用，不可叠加</div><div class="bottom"><span class="date">2026.08.01-08.31</span><button class="claim-btn" onclick="claimCoupon(this)">立即领取</button></div></div>
+                </div>
+                <div class="coupon-card type-reduce">
+                    <div class="left"><div class="amount"><span class="yen">¥</span>20</div><div class="condition">满100可用</div></div>
+                    <div class="right"><div class="name">餐饮满减券</div><div class="desc">仅限餐饮品类使用</div><div class="bottom"><span class="date">2026.08.01-08.15</span><button class="claim-btn" onclick="claimCoupon(this)">立即领取</button></div></div>
+                </div>
+                <div class="coupon-card type-discount">
+                    <div class="left"><div class="amount">8<span class="yen">折</span></div><div class="condition">无门槛</div></div>
+                    <div class="right"><div class="name">会员专享折扣券</div><div class="desc">黄金会员及以上可用</div><div class="bottom"><span class="date">2026.08.01-08.31</span><button class="claim-btn" onclick="claimCoupon(this)">立即领取</button></div></div>
+                </div>
+                <div class="coupon-card type-food">
+                    <div class="left"><div class="amount"><span class="yen">¥</span>30</div><div class="condition">满80可用</div></div>
+                    <div class="right"><div class="name">星巴克饮品券</div><div class="desc">限星巴克门店使用</div><div class="bottom"><span class="date">2026.08.01-09.30</span><button class="claim-btn" onclick="claimCoupon(this)">立即领取</button></div></div>
+                </div>
+                <div class="coupon-card type-reduce">
+                    <div class="left"><div class="amount"><span class="yen">¥</span>100</div><div class="condition">满500可用</div></div>
+                    <div class="right"><div class="name">品牌满减券</div><div class="desc">限NIKE、ZARA品牌</div><div class="bottom"><span class="date">2026.08.06-08.20</span><button class="claim-btn" onclick="claimCoupon(this)">立即领取</button></div></div>
+                </div>
+                <div class="coupon-card type-discount">
+                    <div class="left"><div class="amount">9<span class="yen">折</span></div><div class="condition">满200可用</div></div>
+                    <div class="right"><div class="name">停车折扣券</div><div class="desc">会员专享停车优惠</div><div class="bottom"><span class="date">2026.08.01-08.31</span><button class="claim-btn claimed">已领取</button></div></div>
+                </div>
+            </div>
+            <!-- 我的券包 -->
+            <div id="panelMy" style="display:none">
+                <div class="status-tabs">
+                    <div class="status-tab active" onclick="switchStatusTab(0)">未使用<span class="count">(5)</span></div>
+                    <div class="status-tab" onclick="switchStatusTab(1)">已使用<span class="count">(12)</span></div>
+                    <div class="status-tab" onclick="switchStatusTab(2)">已过期<span class="count">(3)</span></div>
+                </div>
+                <div id="statusUnused" class="my-coupon-list">
+                    <div class="my-coupon status-unused">
+                        <div class="left"><div class="amount"><span class="yen">¥</span>50</div><div class="condition">满300</div></div>
+                        <div class="right"><div class="name">全场满减券</div><div class="desc">全场商品通用</div><div class="date">2026.08.01-08.31</div><button class="use-btn" onclick="alert('去使用')">去使用</button></div>
+                    </div>
+                    <div class="my-coupon status-unused">
+                        <div class="left"><div class="amount">8<span class="yen">折</span></div><div class="condition">无门槛</div></div>
+                        <div class="right"><div class="name">会员专享折扣券</div><div class="desc">黄金会员及以上</div><div class="date">2026.08.01-08.31</div><button class="use-btn" onclick="alert('去使用')">去使用</button></div>
+                    </div>
+                    <div class="my-coupon status-unused">
+                        <div class="left"><div class="amount"><span class="yen">¥</span>30</div><div class="condition">满80</div></div>
+                        <div class="right"><div class="name">星巴克饮品券</div><div class="desc">限星巴克门店</div><div class="date">2026.08.01-09.30</div><button class="use-btn" onclick="alert('去使用')">去使用</button></div>
+                    </div>
+                    <div class="my-coupon status-unused">
+                        <div class="left"><div class="amount"><span class="yen">¥</span>20</div><div class="condition">满100</div></div>
+                        <div class="right"><div class="name">餐饮满减券</div><div class="desc">仅限餐饮品类</div><div class="date">2026.08.01-08.15</div><button class="use-btn" onclick="alert('去使用')">去使用</button></div>
+                    </div>
+                    <div class="my-coupon status-unused">
+                        <div class="left"><div class="amount"><span class="yen">¥</span>100</div><div class="condition">满500</div></div>
+                        <div class="right"><div class="name">品牌满减券</div><div class="desc">限NIKE、ZARA</div><div class="date">2026.08.06-08.20</div><button class="use-btn" onclick="alert('去使用')">去使用</button></div>
+                    </div>
+                </div>
+                <div id="statusUsed" class="my-coupon-list" style="display:none">
+                    <div class="my-coupon status-used">
+                        <div class="left"><div class="amount"><span class="yen">¥</span>30</div><div class="condition">满100</div></div>
+                        <div class="right"><div class="name">餐饮满减券</div><div class="desc">已使用于2026.07.20</div><div class="date">2026.07.01-07.31</div></div>
+                    </div>
+                    <div class="empty-state"><div class="icon">📋</div><div class="text">暂无更多已使用优惠券</div></div>
+                </div>
+                <div id="statusExpired" class="my-coupon-list" style="display:none">
+                    <div class="my-coupon status-expired">
+                        <div class="left"><div class="amount"><span class="yen">¥</span>20</div><div class="condition">满80</div></div>
+                        <div class="right"><div class="name">超市满减券</div><div class="desc">已于2026.06.30过期</div><div class="date">2026.06.01-06.30</div></div>
+                    </div>
+                    <div class="empty-state"><div class="icon">📋</div><div class="text">暂无更多已过期优惠券</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-bar">
+            <div class="tab-item" onclick="location.href='home.html'">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>首页</span>
+            </div>
+            <div class="tab-item" onclick="location.href='points-mall.html'">
+                <svg viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
+                <span>积分商城</span>
+            </div>
+            <div class="tab-item active" onclick="location.href='coupon-center.html'">
+                <svg viewBox="0 0 24 24"><path d="M20 12c0-1.1.9-2 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-1.99.9-1.99 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2zm-4.42 4.8L12 14.5l-3.58 2.3 1.08-4.12-3.29-2.69 4.24-.25L12 5.8l1.54 3.95 4.24.25-3.29 2.69 1.09 4.11z"/></svg>
+                <span>优惠券</span>
+            </div>
+            <div class="tab-item" onclick="location.href='member-center.html'">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span>会员中心</span>
+            </div>
+        </div>
+    </div>
+        </div>
+        <div class="home-indicator"></div>
+        </div>
+    <script>
+        function switchMainTab(idx) {
+            document.querySelectorAll('.main-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+            document.getElementById('panelClaim').style.display = idx===0 ? 'block' : 'none';
+            document.getElementById('panelMy').style.display = idx===1 ? 'block' : 'none';
+        }
+        function switchStatusTab(idx) {
+            document.querySelectorAll('.status-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+            document.getElementById('statusUnused').style.display = idx===0 ? 'block' : 'none';
+            document.getElementById('statusUsed').style.display = idx===1 ? 'block' : 'none';
+            document.getElementById('statusExpired').style.display = idx===2 ? 'block' : 'none';
+        }
+        function claimCoupon(btn) {
+            btn.textContent = '已领取';
+            btn.classList.add('claimed');
+            console.log('[优惠券中心] 领取优惠券成功');
+        }
+        console.log('[优惠券中心] 页面加载完成');
+    </script>
+</body>
+</html>

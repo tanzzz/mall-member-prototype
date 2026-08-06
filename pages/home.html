@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>首页</title>
+    <style>
+        /* ===== CSS动画关键帧 ===== */
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes slideInRight { from{transform:translateX(30px);opacity:0} to{transform:translateX(0);opacity:1} }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        @keyframes marquee { 0%{transform:translateX(100%)} 100%{transform:translateX(-100%)} }
+        @keyframes flashTag { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        @keyframes countPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+        @keyframes bounceIn { 0%{transform:scale(.3);opacity:0} 50%{transform:scale(1.05)} 70%{transform:scale(.9)} 100%{transform:scale(1);opacity:1} }
+        @keyframes dotBlink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        @keyframes floatUp { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-30px)} }
+        @keyframes cardShine { 0%{left:-100%} 100%{left:200%} }
+        @keyframes slideDown { from{transform:translateY(-100%);opacity:0} to{transform:translateY(0);opacity:1} }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif; background:#1a1a2e; display:flex; justify-content:center; align-items:center; min-height:100vh; }
+        /* iPhone 17 Pro 外壳 */
+        .iphone-device { width:403px; height:874px; background:linear-gradient(145deg,#2a2a2a,#1a1a1a,#0d0d0d); border-radius:52px; padding:14px; position:relative; box-shadow:0 0 0 1px rgba(255,255,255,.08),0 20px 60px rgba(0,0,0,.5),0 0 120px rgba(0,0,0,.3),inset 0 0 1px rgba(255,255,255,.1); }
+        .iphone-device::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:130px; height:34px; background:#0d0d0d; border-radius:0 0 20px 20px; z-index:100; }
+        .iphone-device::after { content:''; position:absolute; top:8px; left:50%; transform:translateX(-50%); width:100px; height:28px; background:#000; border-radius:0 0 16px 16px; z-index:101; }
+        /* 灵动岛摄像头 */
+        .dynamic-island-cam { position:absolute; top:18px; right:calc(50% - 42px); width:10px; height:10px; background:radial-gradient(circle at 35% 35%,#1a1a2e,#000); border-radius:50%; z-index:102; border:1px solid rgba(255,255,255,.05); }
+        /* 侧边按钮 */
+        .btn-side-left-1 { position:absolute; left:-2px; top:140px; width:3px; height:28px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-left-2 { position:absolute; left:-2px; top:195px; width:3px; height:48px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-left-3 { position:absolute; left:-2px; top:253px; width:3px; height:48px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-right { position:absolute; right:-2px; top:200px; width:3px; height:60px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:0 2px 2px 0; }
+        /* 屏幕内容区 */
+        .iphone-screen { width:375px; height:812px; border-radius:40px; overflow:hidden; position:relative; background:#F5F5F5; }
+        /* 底部 Home 指示条 */
+        .home-indicator { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); width:134px; height:5px; background:rgba(0,0,0,.2); border-radius:3px; z-index:200; }
+        .phone-frame { width:375px; height:812px; background:#F5F5F5; position:relative; overflow:hidden; display:flex; flex-direction:column; }
+
+        /* 状态栏 */
+        .status-bar { height:44px; background:#E2231A; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; color:#fff; }
+        .status-bar .time { font-weight:600; }
+        .status-bar .icons { display:flex; gap:4px; font-size:11px; }
+
+        /* 顶部搜索栏 */
+        .top-bar { height:44px; background:#E2231A; display:flex; align-items:center; padding:0 12px; gap:10px; animation:fadeIn .4s ease; }
+        .city-selector { font-size:13px; color:#fff; display:flex; align-items:center; gap:2px; white-space:nowrap; cursor:pointer; }
+        .city-selector svg { width:12px; height:12px; fill:#fff; }
+        .search-box { flex:1; height:32px; background:rgba(255,255,255,.92); border-radius:16px; display:flex; align-items:center; padding:0 12px; gap:6px; }
+        .search-box svg { width:16px; height:16px; fill:#999; flex-shrink:0; }
+        .search-box span { font-size:13px; color:#bbb; }
+        .msg-icon { width:28px; height:28px; display:flex; align-items:center; justify-content:center; position:relative; cursor:pointer; }
+        .msg-icon svg { width:22px; height:22px; fill:#fff; }
+        .msg-icon .dot { position:absolute; top:2px; right:2px; width:8px; height:8px; background:#FFD700; border-radius:50%; border:1.5px solid #E2231A; animation:pulse 1.5s infinite; }
+
+        /* 公告条 */
+        .notice-bar { height:32px; background:#FFF8E1; display:flex; align-items:center; padding:0 12px; gap:6px; overflow:hidden; animation:slideDown .4s ease .2s both; }
+        .notice-bar .horn { font-size:14px; flex-shrink:0; }
+        .notice-bar .notice-text { flex:1; overflow:hidden; white-space:nowrap; position:relative; }
+        .notice-bar .notice-text span { display:inline-block; font-size:12px; color:#E65100; animation:marquee 12s linear infinite; }
+        .notice-bar .close-btn { font-size:14px; color:#999; cursor:pointer; flex-shrink:0; }
+
+        /* 可滚动内容 */
+        .scroll-content { flex:1; overflow-y:auto; padding-bottom:10px; }
+        .scroll-content::-webkit-scrollbar { display:none; }
+
+        /* 轮播图 */
+        .banner-area { padding:10px 12px 0; }
+        .banner-wrapper { border-radius:10px; overflow:hidden; position:relative; height:148px; }
+        .banner-slide { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#fff; flex-direction:column; gap:6px; position:absolute; top:0; left:0; opacity:0; transition:opacity .8s ease; }
+        .banner-slide.active { opacity:1; }
+        .banner-slide .title { font-size:22px; font-weight:700; text-shadow:0 2px 8px rgba(0,0,0,.2); }
+        .banner-slide .sub { font-size:13px; opacity:.9; }
+        .banner-slide .tag { background:rgba(255,255,255,.25); padding:3px 14px; border-radius:20px; font-size:11px; margin-top:2px; backdrop-filter:blur(4px); }
+        .banner-dots { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); display:flex; gap:5px; }
+        .banner-dots .dot { width:6px; height:6px; border-radius:3px; background:rgba(255,255,255,.4); transition:all .3s; }
+        .banner-dots .dot.active { width:18px; background:#fff; }
+
+        /* 功能宫格 */
+        .func-grid { background:#fff; margin:10px 12px 0; border-radius:10px; padding:14px 8px 10px; display:grid; grid-template-columns:repeat(4,1fr); gap:8px 0; animation:fadeInUp .5s ease .3s both; }
+        .func-item { display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; transition:transform .2s; }
+        .func-item:active { transform:scale(.92); }
+        .func-item .icon-wrap { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; position:relative; }
+        .func-item .label { font-size:11px; color:#333; }
+        .icon-member-code { background:linear-gradient(135deg,#FF6B6B,#E2231A); }
+        .icon-self-points { background:linear-gradient(135deg,#FFA726,#FF9800); }
+        .icon-parking { background:linear-gradient(135deg,#42A5F5,#1E88E5); }
+        .icon-coupon { background:linear-gradient(135deg,#EF5350,#C62828); }
+        .icon-points-mall { background:linear-gradient(135deg,#FFCA28,#FFB300); }
+        .icon-store-nav { background:linear-gradient(135deg,#AB47BC,#8E24AA); }
+        .icon-group-buy { background:linear-gradient(135deg,#66BB6A,#43A047); }
+        .icon-all-service { background:linear-gradient(135deg,#78909C,#546E7A); }
+        .hot-tag { position:absolute; top:-4px; right:-4px; background:#E2231A; color:#fff; font-size:8px; padding:1px 4px; border-radius:6px; font-weight:600; animation:flashTag 1.2s infinite; }
+
+        /* 会员权益卡片 */
+        .member-card-section { padding:10px 12px 0; }
+        .member-card { background:linear-gradient(135deg,#2C2C2C,#1A1A1A); border-radius:10px; padding:14px 16px; color:#fff; position:relative; overflow:hidden; animation:fadeInUp .5s ease .4s both; }
+        .member-card::before { content:''; position:absolute; top:-20px; right:-20px; width:100px; height:100px; background:radial-gradient(circle,rgba(196,168,98,.3),transparent); border-radius:50%; }
+        .member-card::after { content:''; position:absolute; bottom:-30px; left:-30px; width:80px; height:80px; background:radial-gradient(circle,rgba(196,168,98,.15),transparent); border-radius:50%; }
+        .member-card .shine { position:absolute; top:0; left:-100%; width:60%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent); animation:cardShine 3s ease-in-out infinite; }
+        .member-card .card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; position:relative; z-index:1; }
+        .member-card .card-top .left { display:flex; align-items:center; gap:8px; }
+        .member-card .card-top .level-badge { background:linear-gradient(135deg,#C4A862,#D4AF37); padding:2px 10px; border-radius:12px; font-size:10px; font-weight:600; color:#1A1A1A; }
+        .member-card .card-top .name { font-size:15px; font-weight:600; }
+        .member-card .card-top .arrow { font-size:14px; color:#C4A862; }
+        .member-card .card-stats { display:flex; gap:0; position:relative; z-index:1; }
+        .member-card .stat-item { flex:1; text-align:center; position:relative; }
+        .member-card .stat-item:not(:last-child)::after { content:''; position:absolute; right:0; top:50%; transform:translateY(-50%); width:.5px; height:24px; background:rgba(255,255,255,.15); }
+        .member-card .stat-item .num { font-size:18px; font-weight:700; color:#C4A862; }
+        .member-card .stat-item .desc { font-size:10px; color:rgba(255,255,255,.5); margin-top:2px; }
+
+        /* 限时秒杀 */
+        .flash-sale-section { padding:10px 12px 0; }
+        .flash-sale-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+        .flash-sale-header .left { display:flex; align-items:center; gap:6px; }
+        .flash-sale-header .title { font-size:15px; font-weight:700; color:#E2231A; }
+        .flash-sale-header .countdown { display:flex; align-items:center; gap:2px; }
+        .countdown .num-box { background:#E2231A; color:#fff; font-size:11px; font-weight:700; padding:1px 4px; border-radius:3px; min-width:20px; text-align:center; animation:countPulse 1s infinite; }
+        .countdown .colon { font-size:11px; color:#E2231A; font-weight:700; }
+        .flash-sale-header .more { font-size:11px; color:#999; display:flex; align-items:center; gap:2px; cursor:pointer; }
+        .flash-sale-scroll { display:flex; gap:8px; overflow-x:auto; padding-bottom:4px; }
+        .flash-sale-scroll::-webkit-scrollbar { display:none; }
+        .flash-sale-item { min-width:90px; flex-shrink:0; background:#fff; border-radius:8px; overflow:hidden; cursor:pointer; transition:transform .2s; }
+        .flash-sale-item:active { transform:scale(.95); }
+        .flash-sale-item .prod-img { height:90px; display:flex; align-items:center; justify-content:center; font-size:32px; background:#FFF5F5; }
+        .flash-sale-item .prod-info { padding:6px 8px; }
+        .flash-sale-item .prod-name { font-size:11px; color:#333; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .flash-sale-item .prod-price { font-size:13px; color:#E2231A; font-weight:700; margin-top:2px; }
+        .flash-sale-item .prod-price .yen { font-size:10px; }
+        .flash-sale-item .prod-origin { font-size:10px; color:#bbb; text-decoration:line-through; }
+
+        /* 活动专区 */
+        .activity-section { padding:10px 12px 0; }
+        .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+        .section-header .title { font-size:15px; font-weight:700; color:#333; }
+        .section-header .more { font-size:11px; color:#999; display:flex; align-items:center; gap:2px; cursor:pointer; }
+        .activity-scroll { display:flex; gap:10px; overflow-x:auto; padding-bottom:4px; }
+        .activity-scroll::-webkit-scrollbar { display:none; }
+        .activity-card { min-width:140px; border-radius:10px; overflow:hidden; flex-shrink:0; cursor:pointer; transition:transform .2s; }
+        .activity-card:active { transform:scale(.97); }
+        .activity-card .card-img { height:88px; display:flex; align-items:center; justify-content:center; color:#fff; flex-direction:column; gap:4px; }
+        .activity-card .card-img .act-title { font-size:15px; font-weight:700; }
+        .activity-card .card-img .act-sub { font-size:11px; opacity:.9; }
+        .activity-card .card-info { background:#fff; padding:8px 10px; }
+        .activity-card .card-info .name { font-size:13px; color:#333; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .activity-card .card-info .tag-row { display:flex; gap:4px; margin-top:4px; }
+        .activity-card .card-info .tag { font-size:10px; padding:1px 6px; border-radius:3px; background:#FFF3E0; color:#E65100; }
+        .act-bg-1 { background:linear-gradient(135deg,#E2231A,#FF6B6B); }
+        .act-bg-2 { background:linear-gradient(135deg,#1E88E5,#42A5F5); }
+        .act-bg-3 { background:linear-gradient(135deg,#43A047,#66BB6A); }
+
+        /* 推荐品牌 */
+        .brand-section { padding:10px 12px 0; }
+        .brand-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+        .brand-card { background:#fff; border-radius:10px; overflow:hidden; cursor:pointer; transition:transform .2s; }
+        .brand-card:active { transform:scale(.97); }
+        .brand-card .brand-img { height:80px; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:700; color:#fff; }
+        .brand-card .brand-info { padding:8px 10px; }
+        .brand-card .brand-info .bname { font-size:14px; font-weight:600; color:#333; }
+        .brand-card .brand-info .bdesc { font-size:11px; color:#999; margin-top:2px; }
+        .brand-card .brand-info .bprice { font-size:13px; color:#E2231A; font-weight:600; margin-top:4px; }
+        .brand-card .brand-info .bprice .unit { font-size:11px; font-weight:400; }
+
+        /* 底部TabBar */
+        .tab-bar { height:50px; background:#fff; border-top:.5px solid #eee; display:flex; align-items:center; justify-content:space-around; padding-bottom:env(safe-area-inset-bottom,0); }
+        .tab-item { display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; flex:1; }
+        .tab-item svg { width:22px; height:22px; }
+        .tab-item span { font-size:10px; }
+        .tab-item.active svg { fill:#E2231A; }
+        .tab-item.active span { color:#E2231A; font-weight:600; }
+        .tab-item:not(.active) svg { fill:#999; }
+        .tab-item:not(.active) span { color:#999; }
+    </style>
+</head>
+<body>
+    <div class="iphone-device">
+        <div class="dynamic-island-cam"></div>
+        <div class="btn-side-left-1"></div>
+        <div class="btn-side-left-2"></div>
+        <div class="btn-side-left-3"></div>
+        <div class="btn-side-right"></div>
+        <div class="iphone-screen">
+    <div class="phone-frame">
+        <!-- 状态栏 -->
+        <div class="status-bar">
+            <span class="time">09:41</span>
+            <span class="icons">5G 100% ▮</span>
+        </div>
+
+        <!-- 顶部搜索栏 -->
+        <div class="top-bar">
+            <div class="city-selector" onclick="alert('切换城市')">
+                <span>深圳</span>
+                <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+            </div>
+            <div class="search-box" onclick="alert('搜索')">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <span>搜索品牌、商品、活动</span>
+            </div>
+            <div class="msg-icon" onclick="alert('消息中心')">
+                <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                <div class="dot"></div>
+            </div>
+        </div>
+
+        <!-- 公告滚动条 -->
+        <div class="notice-bar">
+            <span class="horn">📢</span>
+            <div class="notice-text">
+                <span>🎉 会员日全场8折起 | 新会员注册送500积分 | 限时秒杀每日10:00开抢</span>
+            </div>
+            <span class="close-btn">✕</span>
+        </div>
+
+        <!-- 可滚动内容区 -->
+        <div class="scroll-content">
+            <!-- 轮播图 -->
+            <div class="banner-area">
+                <div class="banner-wrapper">
+                    <div class="banner-slide active" style="background:linear-gradient(135deg,#E2231A,#FF6B6B)">
+                        <span class="title">年中狂欢节</span>
+                        <span class="sub">全场满300减50</span>
+                        <span class="tag">立即抢购</span>
+                    </div>
+                    <div class="banner-slide" style="background:linear-gradient(135deg,#1E88E5,#42A5F5)">
+                        <span class="title">新会员专享</span>
+                        <span class="sub">注册即送500积分</span>
+                        <span class="tag">立即注册</span>
+                    </div>
+                    <div class="banner-slide" style="background:linear-gradient(135deg,#43A047,#66BB6A)">
+                        <span class="title">停车缴费</span>
+                        <span class="sub">会员专享8折优惠</span>
+                        <span class="tag">去缴费</span>
+                    </div>
+                    <div class="banner-dots">
+                        <div class="dot active"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 功能宫格 -->
+            <div class="func-grid">
+                <div class="func-item" onclick="location.href='member-code.html'">
+                    <div class="icon-wrap icon-member-code">🎫</div>
+                    <span class="label">会员码</span>
+                </div>
+                <div class="func-item" onclick="location.href='points-detail.html'">
+                    <div class="icon-wrap icon-self-points">⭐</div>
+                    <span class="label">我的积分</span>
+                </div>
+                <div class="func-item" onclick="location.href='parking.html'">
+                    <div class="icon-wrap icon-parking">🅿️</div>
+                    <span class="label">停车缴费</span>
+                </div>
+                <div class="func-item" onclick="location.href='coupon-center.html'">
+                    <div class="icon-wrap icon-coupon">🏷️</div>
+                    <span class="label">领券中心<span class="hot-tag">HOT</span></span>
+                </div>
+                <div class="func-item" onclick="location.href='points-mall.html'">
+                    <div class="icon-wrap icon-points-mall">🎁</div>
+                    <span class="label">积分商城</span>
+                </div>
+                <div class="func-item" onclick="location.href='store-nav.html'">
+                    <div class="icon-wrap icon-store-nav">📍</div>
+                    <span class="label">门店导航</span>
+                </div>
+                <div class="func-item" onclick="alert('拼团专区')">
+                    <div class="icon-wrap icon-group-buy">👥</div>
+                    <span class="label">拼团专区<span class="hot-tag">NEW</span></span>
+                </div>
+                <div class="func-item" onclick="location.href='all-services.html'">
+                    <div class="icon-wrap icon-all-service">☰</div>
+                    <span class="label">全部服务</span>
+                </div>
+            </div>
+
+            <!-- 会员权益卡片 -->
+            <div class="member-card-section">
+                <div class="member-card" onclick="location.href='member-center.html'">
+                    <div class="shine"></div>
+                    <div class="card-top">
+                        <div class="left">
+                            <span class="level-badge">黄金会员</span>
+                            <span class="name">张小悦</span>
+                        </div>
+                        <span class="arrow">›</span>
+                    </div>
+                    <div class="card-stats">
+                        <div class="stat-item">
+                            <div class="num">8,620</div>
+                            <div class="desc">积分余额</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="num">5</div>
+                            <div class="desc">优惠券</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="num">¥3,280</div>
+                            <div class="desc">累计消费</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 限时秒杀 -->
+            <div class="flash-sale-section">
+                <div class="flash-sale-header">
+                    <div class="left">
+                        <span class="title">⚡ 限时秒杀</span>
+                        <div class="countdown">
+                            <span class="num-box">02</span>
+                            <span class="colon">:</span>
+                            <span class="num-box">35</span>
+                            <span class="colon">:</span>
+                            <span class="num-box">18</span>
+                        </div>
+                    </div>
+                    <span class="more">更多 ›</span>
+                </div>
+                <div class="flash-sale-scroll">
+                    <div class="flash-sale-item" onclick="alert('星巴克拿铁')">
+                        <div class="prod-img">☕</div>
+                        <div class="prod-info">
+                            <div class="prod-name">星巴克拿铁</div>
+                            <div class="prod-price"><span class="yen">¥</span>9.9</div>
+                            <div class="prod-origin">¥35</div>
+                        </div>
+                    </div>
+                    <div class="flash-sale-item" onclick="alert('电影票')">
+                        <div class="prod-img">🎬</div>
+                        <div class="prod-info">
+                            <div class="prod-name">电影票兑换券</div>
+                            <div class="prod-price"><span class="yen">¥</span>19.9</div>
+                            <div class="prod-origin">¥50</div>
+                        </div>
+                    </div>
+                    <div class="flash-sale-item" onclick="alert('停车券')">
+                        <div class="prod-img">🅿️</div>
+                        <div class="prod-info">
+                            <div class="prod-name">2小时停车券</div>
+                            <div class="prod-price"><span class="yen">¥</span>5.9</div>
+                            <div class="prod-origin">¥20</div>
+                        </div>
+                    </div>
+                    <div class="flash-sale-item" onclick="alert('甜品券')">
+                        <div class="prod-img">🍰</div>
+                        <div class="prod-info">
+                            <div class="prod-name">甜品满减券</div>
+                            <div class="prod-price"><span class="yen">¥</span>1.9</div>
+                            <div class="prod-origin">¥15</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 活动专区 -->
+            <div class="activity-section">
+                <div class="section-header">
+                    <span class="title">🔥 热门活动</span>
+                    <span class="more">查看全部 ›</span>
+                </div>
+                <div class="activity-scroll">
+                    <div class="activity-card" onclick="alert('年中大促')">
+                        <div class="card-img act-bg-1">
+                            <span class="act-title">年中大促</span>
+                            <span class="act-sub">满300减50</span>
+                        </div>
+                        <div class="card-info">
+                            <div class="name">全场商品年中狂欢</div>
+                            <div class="tag-row"><span class="tag">满减</span><span class="tag">限时</span></div>
+                        </div>
+                    </div>
+                    <div class="activity-card" onclick="alert('新品首发')">
+                        <div class="card-img act-bg-2">
+                            <span class="act-title">新品首发</span>
+                            <span class="act-sub">买一赠一</span>
+                        </div>
+                        <div class="card-info">
+                            <div class="name">秋季新品抢先购</div>
+                            <div class="tag-row"><span class="tag">新品</span><span class="tag">赠品</span></div>
+                        </div>
+                    </div>
+                    <div class="activity-card" onclick="alert('会员日')">
+                        <div class="card-img act-bg-3">
+                            <span class="act-title">会员日</span>
+                            <span class="act-sub">双倍积分</span>
+                        </div>
+                        <div class="card-info">
+                            <div class="name">每周三会员专享</div>
+                            <div class="tag-row"><span class="tag">积分</span><span class="tag">会员</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 推荐品牌 -->
+            <div class="brand-section">
+                <div class="section-header">
+                    <span class="title">🏷️ 推荐品牌</span>
+                    <span class="more">查看全部 ›</span>
+                </div>
+                <div class="brand-grid">
+                    <div class="brand-card" onclick="alert('NIKE')">
+                        <div class="brand-img" style="background:linear-gradient(135deg,#111,#333)">NIKE</div>
+                        <div class="brand-info">
+                            <div class="bname">NIKE</div>
+                            <div class="bdesc">运动装备满减</div>
+                            <div class="bprice"><span class="unit">满</span>500<span class="unit">减</span>100</div>
+                        </div>
+                    </div>
+                    <div class="brand-card" onclick="alert('ZARA')">
+                        <div class="brand-img" style="background:linear-gradient(135deg,#222,#555)">ZARA</div>
+                        <div class="brand-info">
+                            <div class="bname">ZARA</div>
+                            <div class="bdesc">秋季新品上市</div>
+                            <div class="bprice"><span class="unit">满</span>800<span class="unit">减</span>150</div>
+                        </div>
+                    </div>
+                    <div class="brand-card" onclick="alert('星巴克')">
+                        <div class="brand-img" style="background:linear-gradient(135deg,#00704A,#1E3932)">☕</div>
+                        <div class="brand-info">
+                            <div class="bname">星巴克</div>
+                            <div class="bdesc">会员专属折扣</div>
+                            <div class="bprice"><span class="unit">低至</span>8<span class="unit">折</span></div>
+                        </div>
+                    </div>
+                    <div class="brand-card" onclick="alert('丝芙兰')">
+                        <div class="brand-img" style="background:linear-gradient(135deg,#E2231A,#FF6B6B)">SEPHORA</div>
+                        <div class="brand-info">
+                            <div class="bname">丝芙兰</div>
+                            <div class="bdesc">美妆满赠好礼</div>
+                            <div class="bprice"><span class="unit">满</span>300<span class="unit">赠</span>礼包</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部TabBar -->
+        <div class="tab-bar">
+            <div class="tab-item active" onclick="location.href='home.html'">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>首页</span>
+            </div>
+            <div class="tab-item" onclick="location.href='points-mall.html'">
+                <svg viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
+                <span>积分商城</span>
+            </div>
+            <div class="tab-item" onclick="location.href='coupon-center.html'">
+                <svg viewBox="0 0 24 24"><path d="M20 12c0-1.1.9-2 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-1.99.9-1.99 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2zm-4.42 4.8L12 14.5l-3.58 2.3 1.08-4.12-3.29-2.69 4.24-.25L12 5.8l1.54 3.95 4.24.25-3.29 2.69 1.09 4.11z"/></svg>
+                <span>优惠券</span>
+            </div>
+            <div class="tab-item" onclick="location.href='member-center.html'">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span>会员中心</span>
+            </div>
+        </div>
+    </div>
+        </div>
+        <div class="home-indicator"></div>
+        </div>
+    </div>
+
+    <script>
+        // Banner轮播
+        (function(){
+            const slides = document.querySelectorAll('.banner-slide');
+            const dots = document.querySelectorAll('.banner-dots .dot');
+            let current = 0;
+            setInterval(() => {
+                slides[current].classList.remove('active');
+                dots[current].classList.remove('active');
+                current = (current + 1) % slides.length;
+                slides[current].classList.add('active');
+                dots[current].classList.add('active');
+            }, 3500);
+        })();
+
+        // 限时秒杀倒计时
+        (function(){
+            let total = 2*3600 + 35*60 + 18;
+            const boxes = document.querySelectorAll('.num-box');
+            setInterval(() => {
+                if(total <= 0) return;
+                total--;
+                const h = Math.floor(total/3600);
+                const m = Math.floor((total%3600)/60);
+                const s = total%60;
+                boxes[0].textContent = String(h).padStart(2,'0');
+                boxes[1].textContent = String(m).padStart(2,'0');
+                boxes[2].textContent = String(s).padStart(2,'0');
+            }, 1000);
+        })();
+        console.log('[首页] 页面加载完成');
+        console.log('[首页] Banner轮播: 3帧, 3.5s自动切换');
+        console.log('[首页] 限时秒杀倒计时已启动');
+    </script>
+</body>
+</html>

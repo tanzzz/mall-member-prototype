@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>积分商城</title>
+    <style>
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        @keyframes cardShine { 0%{left:-100%} 100%{left:200%} }
+        @keyframes bounceIn { 0%{transform:scale(.3);opacity:0} 50%{transform:scale(1.05)} 70%{transform:scale(.9)} 100%{transform:scale(1);opacity:1} }
+        @keyframes slideInRight { from{transform:translateX(20px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif; background:#1a1a2e; display:flex; justify-content:center; align-items:center; min-height:100vh; }
+        /* iPhone 17 Pro 外壳 */
+        .iphone-device { width:403px; height:874px; background:linear-gradient(145deg,#2a2a2a,#1a1a1a,#0d0d0d); border-radius:52px; padding:14px; position:relative; box-shadow:0 0 0 1px rgba(255,255,255,.08),0 20px 60px rgba(0,0,0,.5),0 0 120px rgba(0,0,0,.3),inset 0 0 1px rgba(255,255,255,.1); }
+        .iphone-device::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:130px; height:34px; background:#0d0d0d; border-radius:0 0 20px 20px; z-index:100; }
+        .iphone-device::after { content:''; position:absolute; top:8px; left:50%; transform:translateX(-50%); width:100px; height:28px; background:#000; border-radius:0 0 16px 16px; z-index:101; }
+        .dynamic-island-cam { position:absolute; top:18px; right:calc(50% - 42px); width:10px; height:10px; background:radial-gradient(circle at 35% 35%,#1a1a2e,#000); border-radius:50%; z-index:102; border:1px solid rgba(255,255,255,.05); }
+        .btn-side-left-1 { position:absolute; left:-2px; top:140px; width:3px; height:28px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-left-2 { position:absolute; left:-2px; top:195px; width:3px; height:48px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-left-3 { position:absolute; left:-2px; top:253px; width:3px; height:48px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-right { position:absolute; right:-2px; top:200px; width:3px; height:60px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:0 2px 2px 0; }
+        .iphone-screen { width:375px; height:812px; border-radius:40px; overflow:hidden; position:relative; background:#F5F5F5; }
+        .home-indicator { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); width:134px; height:5px; background:rgba(0,0,0,.2); border-radius:3px; z-index:200; }
+        .phone-frame { width:375px; height:812px; background:#F5F5F5; position:relative; overflow:hidden; display:flex; flex-direction:column; }
+
+        .status-bar { height:44px; background:#E2231A; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; color:#fff; }
+        .status-bar .time { font-weight:600; }
+        .status-bar .icons { display:flex; gap:4px; font-size:11px; }
+        .nav-bar { height:44px; background:#E2231A; display:flex; align-items:center; justify-content:space-between; padding:0 16px; }
+        .nav-bar .back { font-size:20px; color:#fff; cursor:pointer; }
+        .nav-bar .title { font-size:17px; font-weight:600; color:#fff; }
+        .nav-bar .rule { font-size:13px; color:rgba(255,255,255,.8); cursor:pointer; }
+
+        .scroll-content { flex:1; overflow-y:auto; }
+        .scroll-content::-webkit-scrollbar { display:none; }
+
+        /* 积分卡片 */
+        .points-card { margin:12px; background:linear-gradient(135deg,#E2231A,#FF4D3A); border-radius:10px; padding:18px 16px; color:#fff; position:relative; overflow:hidden; animation:fadeInUp .5s ease; }
+        .points-card::before { content:''; position:absolute; top:-30px; right:-30px; width:100px; height:100px; background:radial-gradient(circle,rgba(255,255,255,.12),transparent); border-radius:50%; }
+        .points-card .shine { position:absolute; top:0; left:-100%; width:60%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent); animation:cardShine 3s ease-in-out infinite; }
+        .points-card .label { font-size:12px; color:rgba(255,255,255,.8); }
+        .points-card .balance { font-size:32px; font-weight:700; margin:4px 0; }
+        .points-card .balance .unit { font-size:14px; font-weight:400; }
+        .points-card .expire { font-size:11px; color:rgba(255,255,255,.6); }
+        .points-card .expire span { color:#FFD700; }
+
+        /* 分类Tab */
+        .category-tabs { display:flex; padding:0 12px; gap:8px; margin-bottom:10px; animation:fadeInUp .5s ease .1s both; }
+        .category-tabs .tab { padding:6px 14px; border-radius:16px; font-size:12px; color:#666; background:#fff; cursor:pointer; transition:all .2s; white-space:nowrap; }
+        .category-tabs .tab.active { background:#E2231A; color:#fff; font-weight:600; }
+        .category-tabs .tab:active { transform:scale(.95); }
+
+        /* 商品网格 */
+        .product-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; padding:0 12px 12px; }
+        .product-card { background:#fff; border-radius:10px; overflow:hidden; cursor:pointer; transition:transform .2s; animation:fadeInUp .5s ease; }
+        .product-card:active { transform:scale(.97); }
+        .product-card .prod-img { height:130px; display:flex; align-items:center; justify-content:center; font-size:48px; background:#FFF5F5; }
+        .product-card .prod-info { padding:10px; }
+        .product-card .prod-name { font-size:13px; color:#333; font-weight:500; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; line-height:1.4; }
+        .product-card .prod-bottom { display:flex; align-items:center; justify-content:space-between; margin-top:6px; }
+        .product-card .prod-points { font-size:15px; color:#E2231A; font-weight:700; }
+        .product-card .prod-points .unit { font-size:11px; font-weight:400; }
+        .product-card .exchange-btn { padding:3px 10px; background:linear-gradient(135deg,#E2231A,#FF4D3A); color:#fff; font-size:11px; border-radius:12px; border:none; cursor:pointer; transition:transform .2s; }
+        .product-card .exchange-btn:active { transform:scale(.9); }
+        .product-card .prod-stock { font-size:10px; color:#999; margin-top:2px; }
+
+        /* 底部TabBar */
+        .tab-bar { height:50px; background:#fff; border-top:.5px solid #eee; display:flex; align-items:center; justify-content:space-around; }
+        .tab-item { display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; flex:1; }
+        .tab-item svg { width:22px; height:22px; }
+        .tab-item span { font-size:10px; }
+        .tab-item.active svg { fill:#E2231A; }
+        .tab-item.active span { color:#E2231A; font-weight:600; }
+        .tab-item:not(.active) svg { fill:#999; }
+        .tab-item:not(.active) span { color:#999; }
+    </style>
+</head>
+<body>
+    <div class="iphone-device">
+        <div class="dynamic-island-cam"></div>
+        <div class="btn-side-left-1"></div>
+        <div class="btn-side-left-2"></div>
+        <div class="btn-side-left-3"></div>
+        <div class="btn-side-right"></div>
+        <div class="iphone-screen">
+    <div class="phone-frame">
+        <div class="status-bar">
+            <span class="time">09:41</span>
+            <span class="icons">5G 100% ▮</span>
+        </div>
+        <div class="nav-bar">
+            <span class="back" onclick="history.back()">‹</span>
+            <span class="title">积分商城</span>
+            <span class="rule" onclick="alert('积分规则')">积分规则</span>
+        </div>
+        <div class="scroll-content">
+            <div class="points-card">
+                <div class="shine"></div>
+                <div class="label">我的积分</div>
+                <div class="balance">8,620 <span class="unit">分</span></div>
+                <div class="expire">本月将有 <span>500分</span> 过期，请尽快使用</div>
+            </div>
+            <div class="category-tabs" id="categoryTabs">
+                <div class="tab active" onclick="switchTab(this)">全部</div>
+                <div class="tab" onclick="switchTab(this)">餐饮</div>
+                <div class="tab" onclick="switchTab(this)">购物</div>
+                <div class="tab" onclick="switchTab(this)">娱乐</div>
+                <div class="tab" onclick="switchTab(this)">生活</div>
+            </div>
+            <div class="product-grid">
+                <div class="product-card" onclick="alert('星巴克中杯券')">
+                    <div class="prod-img">☕</div>
+                    <div class="prod-info">
+                        <div class="prod-name">星巴克中杯饮品券</div>
+                        <div class="prod-bottom">
+                            <span class="prod-points"><span class="unit">¥</span>1,200分</span>
+                            <button class="exchange-btn">兑换</button>
+                        </div>
+                        <div class="prod-stock">剩余 23 份</div>
+                    </div>
+                </div>
+                <div class="product-card" onclick="alert('欧舒丹护手霜')">
+                    <div class="prod-img">🧴</div>
+                    <div class="prod-info">
+                        <div class="prod-name">欧舒丹护手霜套装</div>
+                        <div class="prod-bottom">
+                            <span class="prod-points">3,500分</span>
+                            <button class="exchange-btn">兑换</button>
+                        </div>
+                        <div class="prod-stock">剩余 8 份</div>
+                    </div>
+                </div>
+                <div class="product-card" onclick="alert('电影票兑换券')">
+                    <div class="prod-img">🎬</div>
+                    <div class="prod-info">
+                        <div class="prod-name">电影票兑换券（2D/3D通用）</div>
+                        <div class="prod-bottom">
+                            <span class="prod-points">2,800分</span>
+                            <button class="exchange-btn">兑换</button>
+                        </div>
+                        <div class="prod-stock">剩余 15 份</div>
+                    </div>
+                </div>
+                <div class="product-card" onclick="alert('定制帆布袋')">
+                    <div class="prod-img">👜</div>
+                    <div class="prod-info">
+                        <div class="prod-name">商场定制帆布袋</div>
+                        <div class="prod-bottom">
+                            <span class="prod-points">800分</span>
+                            <button class="exchange-btn">兑换</button>
+                        </div>
+                        <div class="prod-stock">剩余 56 份</div>
+                    </div>
+                </div>
+                <div class="product-card" onclick="alert('满100减20券')">
+                    <div class="prod-img">🏷️</div>
+                    <div class="prod-info">
+                        <div class="prod-name">满100减20优惠券</div>
+                        <div class="prod-bottom">
+                            <span class="prod-points">500分</span>
+                            <button class="exchange-btn">兑换</button>
+                        </div>
+                        <div class="prod-stock">剩余 100 份</div>
+                    </div>
+                </div>
+                <div class="product-card" onclick="alert('2小时停车券')">
+                    <div class="prod-img">🅿️</div>
+                    <div class="prod-info">
+                        <div class="prod-name">2小时免费停车券</div>
+                        <div class="prod-bottom">
+                            <span class="prod-points">600分</span>
+                            <button class="exchange-btn">兑换</button>
+                        </div>
+                        <div class="prod-stock">剩余 42 份</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-bar">
+            <div class="tab-item" onclick="location.href='home.html'">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>首页</span>
+            </div>
+            <div class="tab-item active" onclick="location.href='points-mall.html'">
+                <svg viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
+                <span>积分商城</span>
+            </div>
+            <div class="tab-item" onclick="location.href='coupon-center.html'">
+                <svg viewBox="0 0 24 24"><path d="M20 12c0-1.1.9-2 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-1.99.9-1.99 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2zm-4.42 4.8L12 14.5l-3.58 2.3 1.08-4.12-3.29-2.69 4.24-.25L12 5.8l1.54 3.95 4.24.25-3.29 2.69 1.09 4.11z"/></svg>
+                <span>优惠券</span>
+            </div>
+            <div class="tab-item" onclick="location.href='member-center.html'">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span>会员中心</span>
+            </div>
+        </div>
+    </div>
+        </div>
+        <div class="home-indicator"></div>
+        </div>
+    <script>
+        function switchTab(el) {
+            document.querySelectorAll('.category-tabs .tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            console.log('[积分商城] 切换分类:', el.textContent);
+        }
+        console.log('[积分商城] 页面加载完成');
+    </script>
+</body>
+</html>

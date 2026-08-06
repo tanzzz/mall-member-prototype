@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>登录</title>
+    <style>
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes bounceIn { 0%{transform:scale(.3);opacity:0} 50%{transform:scale(1.05)} 70%{transform:scale(.9)} 100%{transform:scale(1);opacity:1} }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        @keyframes slideInRight { from{transform:translateX(30px);opacity:0} to{transform:translateX(0);opacity:1} }
+        @keyframes dotBlink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif; background:#1a1a2e; display:flex; justify-content:center; align-items:center; min-height:100vh; }
+        /* iPhone 17 Pro 外壳 */
+        .iphone-device { width:403px; height:874px; background:linear-gradient(145deg,#2a2a2a,#1a1a1a,#0d0d0d); border-radius:52px; padding:14px; position:relative; box-shadow:0 0 0 1px rgba(255,255,255,.08),0 20px 60px rgba(0,0,0,.5),0 0 120px rgba(0,0,0,.3),inset 0 0 1px rgba(255,255,255,.1); }
+        .iphone-device::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:130px; height:34px; background:#0d0d0d; border-radius:0 0 20px 20px; z-index:100; }
+        .iphone-device::after { content:''; position:absolute; top:8px; left:50%; transform:translateX(-50%); width:100px; height:28px; background:#000; border-radius:0 0 16px 16px; z-index:101; }
+        .dynamic-island-cam { position:absolute; top:18px; right:calc(50% - 42px); width:10px; height:10px; background:radial-gradient(circle at 35% 35%,#1a1a2e,#000); border-radius:50%; z-index:102; border:1px solid rgba(255,255,255,.05); }
+        .btn-side-left-1 { position:absolute; left:-2px; top:140px; width:3px; height:28px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-left-2 { position:absolute; left:-2px; top:195px; width:3px; height:48px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-left-3 { position:absolute; left:-2px; top:253px; width:3px; height:48px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-right { position:absolute; right:-2px; top:200px; width:3px; height:60px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:0 2px 2px 0; }
+        .iphone-screen { width:375px; height:812px; border-radius:40px; overflow:hidden; position:relative; background:#fff; }
+        .home-indicator { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); width:134px; height:5px; background:rgba(0,0,0,.2); border-radius:3px; z-index:200; }
+        .phone-frame { width:375px; height:812px; background:#fff; position:relative; overflow:hidden; display:flex; flex-direction:column; }
+
+        .status-bar { height:44px; background:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; color:#333; }
+        .status-bar .time { font-weight:600; }
+        .status-bar .icons { display:flex; gap:4px; font-size:11px; }
+
+        .scroll-content { flex:1; overflow-y:auto; padding:0 30px; display:flex; flex-direction:column; }
+        .scroll-content::-webkit-scrollbar { display:none; }
+
+        /* 品牌LOGO区 */
+        .brand-area { text-align:center; padding:50px 0 36px; animation:fadeInUp .6s ease; }
+        .brand-logo { width:72px; height:72px; background:linear-gradient(135deg,#E2231A,#FF6B6B); border-radius:20px; margin:0 auto 14px; display:flex; align-items:center; justify-content:center; font-size:32px; color:#fff; font-weight:700; box-shadow:0 8px 24px rgba(226,35,26,.25); animation:bounceIn .8s ease; }
+        .brand-name { font-size:20px; font-weight:700; color:#333; }
+        .brand-slogan { font-size:13px; color:#999; margin-top:4px; }
+
+        /* 表单区 */
+        .form-area { animation:fadeInUp .6s ease .2s both; }
+        .input-group { margin-bottom:16px; position:relative; }
+        .input-group label { display:block; font-size:13px; color:#666; margin-bottom:6px; font-weight:500; }
+        .input-row { display:flex; align-items:center; border:1px solid #E0E0E0; border-radius:10px; overflow:hidden; transition:border-color .3s,box-shadow .3s; }
+        .input-row:focus-within { border-color:#E2231A; box-shadow:0 0 0 3px rgba(226,35,26,.1); }
+        .input-prefix { padding:0 12px; font-size:14px; color:#333; border-right:1px solid #E0E0E0; height:48px; display:flex; align-items:center; background:#FAFAFA; flex-shrink:0; }
+        .input-row input { flex:1; height:48px; border:none; outline:none; padding:0 12px; font-size:15px; color:#333; background:transparent; }
+        .input-row input::placeholder { color:#C0C0C0; }
+        .code-btn { padding:0 14px; height:48px; background:transparent; border:none; color:#E2231A; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; flex-shrink:0; }
+        .code-btn.disabled { color:#C0C0C0; pointer-events:none; }
+
+        /* 登录按钮 */
+        .login-btn { width:100%; height:48px; background:linear-gradient(135deg,#E2231A,#FF4D3A); border:none; border-radius:10px; color:#fff; font-size:16px; font-weight:600; cursor:pointer; margin-top:8px; transition:transform .2s,box-shadow .2s; box-shadow:0 4px 16px rgba(226,35,26,.3); }
+        .login-btn:active { transform:scale(.97); box-shadow:0 2px 8px rgba(226,35,26,.2); }
+        .login-btn.loading { background:linear-gradient(90deg,#E2231A,#FF4D3A,#E2231A,#FF4D3A); background-size:300% 100%; animation:shimmer 2s linear infinite; }
+
+        /* 微信登录 */
+        .wechat-login { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; height:48px; background:#07C160; border:none; border-radius:10px; color:#fff; font-size:15px; font-weight:500; cursor:pointer; margin-top:12px; transition:transform .2s; }
+        .wechat-login:active { transform:scale(.97); }
+        .wechat-login svg { width:20px; height:20px; fill:#fff; }
+
+        /* 分隔线 */
+        .divider { display:flex; align-items:center; margin:24px 0; }
+        .divider::before,.divider::after { content:''; flex:1; height:.5px; background:#E0E0E0; }
+        .divider span { padding:0 12px; font-size:12px; color:#C0C0C0; }
+
+        /* 协议 */
+        .agreement { display:flex; align-items:flex-start; gap:8px; margin-top:20px; padding:0 4px; animation:fadeIn .5s ease .5s both; }
+        .agreement .check-box { width:16px; height:16px; border-radius:50%; border:1.5px solid #C0C0C0; display:flex; align-items:center; justify-content:center; flex-shrink:0; cursor:pointer; margin-top:1px; transition:all .2s; }
+        .agreement .check-box.checked { background:#E2231A; border-color:#E2231A; }
+        .agreement .check-box.checked::after { content:'✓'; color:#fff; font-size:10px; font-weight:700; }
+        .agreement .text { font-size:11px; color:#999; line-height:1.5; }
+        .agreement .text a { color:#E2231A; text-decoration:none; }
+
+        /* 底部注册 */
+        .bottom-link { text-align:center; margin-top:24px; padding-bottom:30px; animation:fadeIn .5s ease .6s both; }
+        .bottom-link span { font-size:13px; color:#999; }
+        .bottom-link a { font-size:13px; color:#E2231A; text-decoration:none; font-weight:500; }
+    </style>
+</head>
+<body>
+    <div class="iphone-device">
+        <div class="dynamic-island-cam"></div>
+        <div class="btn-side-left-1"></div>
+        <div class="btn-side-left-2"></div>
+        <div class="btn-side-left-3"></div>
+        <div class="btn-side-right"></div>
+        <div class="iphone-screen">
+    <div class="phone-frame">
+        <div class="status-bar">
+            <span class="time">09:41</span>
+            <span class="icons">5G 100% ▮</span>
+        </div>
+        <div class="scroll-content">
+            <div class="brand-area">
+                <div class="brand-logo">悦</div>
+                <div class="brand-name">悦享会员</div>
+                <div class="brand-slogan">尊享品质生活 悦享每一刻</div>
+            </div>
+            <div class="form-area">
+                <div class="input-group">
+                    <label>手机号</label>
+                    <div class="input-row">
+                        <span class="input-prefix">+86</span>
+                        <input type="tel" placeholder="请输入手机号" maxlength="11" id="phoneInput">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>验证码</label>
+                    <div class="input-row">
+                        <input type="text" placeholder="请输入验证码" maxlength="6" id="codeInput">
+                        <button class="code-btn" id="codeBtn" onclick="sendCode()">获取验证码</button>
+                    </div>
+                </div>
+                <button class="login-btn" onclick="handleLogin()">登录 / 注册</button>
+                <div class="divider"><span>其他登录方式</span></div>
+                <button class="wechat-login" onclick="alert('微信登录')">
+                    <svg viewBox="0 0 24 24"><path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 01.213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 00.167-.054l1.903-1.114a.864.864 0 01.717-.098 10.16 10.16 0 002.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.153-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178A1.17 1.17 0 014.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 01-1.162 1.178 1.17 1.17 0 01-1.162-1.178c0-.651.52-1.18 1.162-1.18zm3.2 4.127c-3.99 0-7.229 2.694-7.229 6.017 0 3.323 3.239 6.017 7.229 6.017.808 0 1.586-.117 2.322-.326a.72.72 0 01.59.082l1.549.907a.274.274 0 00.14.045c.131 0 .238-.108.238-.242 0-.06-.023-.117-.039-.174l-.318-1.208a.488.488 0 01.175-.546c1.502-1.104 2.46-2.748 2.46-4.578 0-3.323-3.239-6.017-7.229-6.017h.012zm-2.556 3.399c.528 0 .956.435.956.97a.963.963 0 01-.956.97.963.963 0 01-.956-.97c0-.535.428-.97.956-.97zm5.112 0c.528 0 .956.435.956.97a.963.963 0 01-.956.97.963.963 0 01-.956-.97c0-.535.428-.97.956-.97z"/></svg>
+                    微信快捷登录
+                </button>
+            </div>
+            <div class="agreement">
+                <div class="check-box" id="agreeBox" onclick="toggleAgree()"></div>
+                <div class="text">我已阅读并同意 <a href="javascript:void(0)">《用户服务协议》</a>和<a href="javascript:void(0)">《隐私政策》</a></div>
+            </div>
+            <div class="bottom-link">
+                <span>已有账号？</span>
+                <a href="javascript:void(0)">直接登录</a>
+            </div>
+        </div>
+    </div>
+        </div>
+        <div class="home-indicator"></div>
+        </div>
+    <script>
+        let agreed = false;
+        function toggleAgree() {
+            agreed = !agreed;
+            document.getElementById('agreeBox').classList.toggle('checked', agreed);
+        }
+        function sendCode() {
+            const btn = document.getElementById('codeBtn');
+            let sec = 60;
+            btn.classList.add('disabled');
+            btn.textContent = sec + 's';
+            const t = setInterval(() => {
+                sec--;
+                if (sec <= 0) { clearInterval(t); btn.classList.remove('disabled'); btn.textContent = '获取验证码'; return; }
+                btn.textContent = sec + 's';
+            }, 1000);
+        }
+        function handleLogin() {
+            if (!agreed) { alert('请先同意用户协议和隐私政策'); return; }
+            const btn = document.querySelector('.login-btn');
+            btn.classList.add('loading');
+            btn.textContent = '登录中...';
+            console.log('[登录页] 用户点击登录, 协议状态:', agreed);
+            setTimeout(() => { location.href = 'home.html'; }, 1500);
+        }
+        console.log('[登录页] 页面加载完成');
+    </script>
+</body>
+</html>

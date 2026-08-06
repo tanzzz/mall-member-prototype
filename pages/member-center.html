@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>会员中心</title>
+    <style>
+        @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        @keyframes cardShine { 0%{left:-100%} 100%{left:200%} }
+        @keyframes progressGrow { from{width:0} to{width:var(--progress)} }
+        @keyframes bounceIn { 0%{transform:scale(.3);opacity:0} 50%{transform:scale(1.05)} 70%{transform:scale(.9)} 100%{transform:scale(1);opacity:1} }
+        @keyframes rotateIn { from{transform:rotate(-10deg);opacity:0} to{transform:rotate(0);opacity:1} }
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif; background:#1a1a2e; display:flex; justify-content:center; align-items:center; min-height:100vh; }
+        /* iPhone 17 Pro 外壳 */
+        .iphone-device { width:403px; height:874px; background:linear-gradient(145deg,#2a2a2a,#1a1a1a,#0d0d0d); border-radius:52px; padding:14px; position:relative; box-shadow:0 0 0 1px rgba(255,255,255,.08),0 20px 60px rgba(0,0,0,.5),0 0 120px rgba(0,0,0,.3),inset 0 0 1px rgba(255,255,255,.1); }
+        .iphone-device::before { content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:130px; height:34px; background:#0d0d0d; border-radius:0 0 20px 20px; z-index:100; }
+        .iphone-device::after { content:''; position:absolute; top:8px; left:50%; transform:translateX(-50%); width:100px; height:28px; background:#000; border-radius:0 0 16px 16px; z-index:101; }
+        .dynamic-island-cam { position:absolute; top:18px; right:calc(50% - 42px); width:10px; height:10px; background:radial-gradient(circle at 35% 35%,#1a1a2e,#000); border-radius:50%; z-index:102; border:1px solid rgba(255,255,255,.05); }
+        .btn-side-left-1 { position:absolute; left:-2px; top:140px; width:3px; height:28px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-left-2 { position:absolute; left:-2px; top:195px; width:3px; height:48px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-left-3 { position:absolute; left:-2px; top:253px; width:3px; height:48px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:2px 0 0 2px; }
+        .btn-side-right { position:absolute; right:-2px; top:200px; width:3px; height:60px; background:linear-gradient(180deg,#3a3a3a,#2a2a2a); border-radius:0 2px 2px 0; }
+        .iphone-screen { width:375px; height:812px; border-radius:40px; overflow:hidden; position:relative; background:#F5F5F5; }
+        .home-indicator { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); width:134px; height:5px; background:rgba(0,0,0,.2); border-radius:3px; z-index:200; }
+        .phone-frame { width:375px; height:812px; background:#F5F5F5; position:relative; overflow:hidden; display:flex; flex-direction:column; }
+
+        /* 头部渐变区 */
+        .header { background:linear-gradient(135deg,#E2231A,#FF4D3A); padding:0 0 20px; position:relative; overflow:hidden; }
+        .header::before { content:''; position:absolute; top:-40px; right:-40px; width:120px; height:120px; background:radial-gradient(circle,rgba(255,255,255,.1),transparent); border-radius:50%; }
+        .header::after { content:''; position:absolute; bottom:-30px; left:-20px; width:80px; height:80px; background:radial-gradient(circle,rgba(255,255,255,.08),transparent); border-radius:50%; }
+        .status-bar { height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 20px; font-size:12px; color:#fff; }
+        .status-bar .time { font-weight:600; }
+        .status-bar .icons { display:flex; gap:4px; font-size:11px; }
+        .nav-bar { height:44px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; }
+        .nav-bar .back { font-size:20px; color:#fff; cursor:pointer; }
+        .nav-bar .title { font-size:17px; font-weight:600; color:#fff; }
+        .nav-bar .settings { font-size:14px; color:rgba(255,255,255,.8); cursor:pointer; }
+
+        /* 用户信息 */
+        .user-info { display:flex; align-items:center; padding:10px 20px; gap:14px; animation:fadeInUp .5s ease; }
+        .avatar { width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg,#FFD700,#FFA000); display:flex; align-items:center; justify-content:center; font-size:24px; color:#fff; font-weight:700; border:2px solid rgba(255,255,255,.4); flex-shrink:0; }
+        .user-detail { flex:1; }
+        .user-name { font-size:18px; font-weight:700; color:#fff; display:flex; align-items:center; gap:8px; }
+        .level-tag { background:linear-gradient(135deg,#FFD700,#FFA000); padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; color:#8B4513; }
+        .user-id { font-size:11px; color:rgba(255,255,255,.7); margin-top:3px; }
+
+        /* 升级进度 */
+        .upgrade-bar { margin:12px 20px 0; animation:fadeInUp .5s ease .1s both; }
+        .upgrade-label { display:flex; justify-content:space-between; font-size:11px; color:rgba(255,255,255,.7); margin-bottom:4px; }
+        .progress-track { height:4px; background:rgba(255,255,255,.2); border-radius:2px; overflow:hidden; }
+        .progress-fill { height:100%; background:linear-gradient(90deg,#FFD700,#FFA000); border-radius:2px; --progress:65%; width:65%; animation:progressGrow 1s ease .5s both; }
+
+        /* 数据卡片 */
+        .data-cards { display:flex; margin:16px 12px 0; gap:0; background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 2px 12px rgba(0,0,0,.06); animation:fadeInUp .5s ease .2s both; }
+        .data-item { flex:1; text-align:center; padding:14px 0; position:relative; cursor:pointer; transition:background .2s; }
+        .data-item:active { background:#FAFAFA; }
+        .data-item:not(:last-child)::after { content:''; position:absolute; right:0; top:50%; transform:translateY(-50%); width:.5px; height:30px; background:#F0F0F0; }
+        .data-item .num { font-size:22px; font-weight:700; color:#333; }
+        .data-item .num .unit { font-size:12px; font-weight:400; color:#999; }
+        .data-item .label { font-size:11px; color:#999; margin-top:2px; }
+
+        /* 功能列表 */
+        .func-section { margin:12px 12px 0; background:#fff; border-radius:10px; overflow:hidden; animation:fadeInUp .5s ease .3s both; }
+        .func-section .section-title { font-size:14px; font-weight:600; color:#333; padding:14px 16px 8px; }
+        .func-item { display:flex; align-items:center; padding:13px 16px; cursor:pointer; transition:background .2s; position:relative; }
+        .func-item:active { background:#FAFAFA; }
+        .func-item:not(:last-child)::after { content:''; position:absolute; bottom:0; left:16px; right:0; height:.5px; background:#F0F0F0; }
+        .func-item .icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:18px; margin-right:12px; flex-shrink:0; }
+        .func-item .info { flex:1; }
+        .func-item .info .name { font-size:14px; color:#333; }
+        .func-item .info .desc { font-size:11px; color:#999; margin-top:1px; }
+        .func-item .arrow { font-size:14px; color:#C0C0C0; }
+        .func-item .badge { background:#E2231A; color:#fff; font-size:10px; padding:1px 6px; border-radius:8px; margin-right:8px; }
+
+        .icon-order { background:linear-gradient(135deg,#FF6B6B,#E2231A); }
+        .icon-consume { background:linear-gradient(135deg,#FFA726,#FF9800); }
+        .icon-points { background:linear-gradient(135deg,#FFCA28,#FFB300); }
+        .icon-coupon { background:linear-gradient(135deg,#42A5F5,#1E88E5); }
+        .icon-code { background:linear-gradient(135deg,#AB47BC,#8E24AA); }
+        .icon-parking { background:linear-gradient(135deg,#66BB6A,#43A047); }
+        .icon-store { background:linear-gradient(135deg,#78909C,#546E7A); }
+        .icon-service { background:linear-gradient(135deg,#EF5350,#C62828); }
+
+        /* 退出登录 */
+        .logout-btn { margin:16px 12px; height:44px; background:#fff; border:1px solid #E0E0E0; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:14px; color:#999; cursor:pointer; transition:all .2s; }
+        .logout-btn:active { background:#FAFAFA; color:#E2231A; border-color:#E2231A; }
+
+        /* 底部TabBar */
+        .tab-bar { height:50px; background:#fff; border-top:.5px solid #eee; display:flex; align-items:center; justify-content:space-around; }
+        .tab-item { display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; flex:1; }
+        .tab-item svg { width:22px; height:22px; }
+        .tab-item span { font-size:10px; }
+        .tab-item.active svg { fill:#E2231A; }
+        .tab-item.active span { color:#E2231A; font-weight:600; }
+        .tab-item:not(.active) svg { fill:#999; }
+        .tab-item:not(.active) span { color:#999; }
+
+        .scroll-content { flex:1; overflow-y:auto; padding-bottom:10px; }
+        .scroll-content::-webkit-scrollbar { display:none; }
+    </style>
+</head>
+<body>
+    <div class="iphone-device">
+        <div class="dynamic-island-cam"></div>
+        <div class="btn-side-left-1"></div>
+        <div class="btn-side-left-2"></div>
+        <div class="btn-side-left-3"></div>
+        <div class="btn-side-right"></div>
+        <div class="iphone-screen">
+    <div class="phone-frame">
+        <div class="header">
+            <div class="status-bar">
+                <span class="time">09:41</span>
+                <span class="icons">5G 100% ▮</span>
+            </div>
+            <div class="nav-bar">
+                <span class="back" onclick="history.back()">‹</span>
+                <span class="title">会员中心</span>
+                <span class="settings" onclick="location.href='settings.html'">设置</span>
+            </div>
+            <div class="user-info">
+                <div class="avatar">悦</div>
+                <div class="user-detail">
+                    <div class="user-name">张小悦 <span class="level-tag">黄金会员</span></div>
+                    <div class="user-id">会员编号 YX20260806001</div>
+                </div>
+            </div>
+            <div class="upgrade-bar">
+                <div class="upgrade-label">
+                    <span>黄金会员</span>
+                    <span>距铂金会员还需3,380积分</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-content">
+            <div class="data-cards">
+                <div class="data-item" onclick="location.href='points-detail.html'">
+                    <div class="num">8,620</div>
+                    <div class="label">积分余额</div>
+                </div>
+                <div class="data-item" onclick="location.href='coupon-center.html'">
+                    <div class="num">5<span class="unit">张</span></div>
+                    <div class="label">优惠券</div>
+                </div>
+                <div class="data-item" onclick="location.href='consumption-record.html'">
+                    <div class="num">¥3,280</div>
+                    <div class="label">累计消费</div>
+                </div>
+            </div>
+
+            <div class="func-section">
+                <div class="section-title">我的服务</div>
+                <div class="func-item" onclick="location.href='order-list.html'">
+                    <div class="icon icon-order">📦</div>
+                    <div class="info"><div class="name">我的订单</div><div class="desc">查看全部订单</div></div>
+                    <span class="badge">2</span><span class="arrow">›</span>
+                </div>
+                <div class="func-item" onclick="location.href='consumption-record.html'">
+                    <div class="icon icon-consume">💳</div>
+                    <div class="info"><div class="name">消费记录</div><div class="desc">查看消费明细</div></div>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="func-item" onclick="location.href='points-detail.html'">
+                    <div class="icon icon-points">⭐</div>
+                    <div class="info"><div class="name">积分明细</div><div class="desc">积分获取与使用</div></div>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="func-item" onclick="location.href='coupon-center.html'">
+                    <div class="icon icon-coupon">🏷️</div>
+                    <div class="info"><div class="name">我的优惠券</div><div class="desc">5张可用券</div></div>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="func-item" onclick="location.href='member-code.html'">
+                    <div class="icon icon-code">🎫</div>
+                    <div class="info"><div class="name">会员码</div><div class="desc">出示会员码享优惠</div></div>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="func-item" onclick="location.href='parking.html'">
+                    <div class="icon icon-parking">🅿️</div>
+                    <div class="info"><div class="name">停车缴费</div><div class="desc">会员专享8折</div></div>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="func-item" onclick="location.href='store-nav.html'">
+                    <div class="icon icon-store">📍</div>
+                    <div class="info"><div class="name">门店导航</div><div class="desc">查找附近门店</div></div>
+                    <span class="arrow">›</span>
+                </div>
+                <div class="func-item" onclick="location.href='all-services.html'">
+                    <div class="icon icon-service">☰</div>
+                    <div class="info"><div class="name">全部服务</div><div class="desc">更多会员权益</div></div>
+                    <span class="arrow">›</span>
+                </div>
+            </div>
+
+            <div class="logout-btn" onclick="if(confirm('确定退出登录？'))location.href='login.html'">退出登录</div>
+        </div>
+
+        <div class="tab-bar">
+            <div class="tab-item" onclick="location.href='home.html'">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>首页</span>
+            </div>
+            <div class="tab-item" onclick="location.href='points-mall.html'">
+                <svg viewBox="0 0 24 24"><path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/></svg>
+                <span>积分商城</span>
+            </div>
+            <div class="tab-item" onclick="location.href='coupon-center.html'">
+                <svg viewBox="0 0 24 24"><path d="M20 12c0-1.1.9-2 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-1.99.9-1.99 2v4c1.1 0 1.99.9 1.99 2s-.89 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2zm-4.42 4.8L12 14.5l-3.58 2.3 1.08-4.12-3.29-2.69 4.24-.25L12 5.8l1.54 3.95 4.24.25-3.29 2.69 1.09 4.11z"/></svg>
+                <span>优惠券</span>
+            </div>
+            <div class="tab-item active" onclick="location.href='member-center.html'">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span>会员中心</span>
+            </div>
+        </div>
+    </div>
+        </div>
+        <div class="home-indicator"></div>
+        </div>
+</body>
+</html>
